@@ -2,6 +2,12 @@ import { BrowserWindow, screen, app } from 'electron';
 import * as path from 'path';
 
 let searchWindow: BrowserWindow | null = null;
+let isQuitting = false;
+
+// Track when app is quitting to allow window close
+app.on('before-quit', () => {
+  isQuitting = true;
+});
 
 export function createSearchWindow(): BrowserWindow {
   const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
@@ -53,10 +59,12 @@ export function createSearchWindow(): BrowserWindow {
     hideSearchWindow();
   });
 
-  // Prevent window from being destroyed, just hide it
+  // Prevent window from being destroyed, just hide it (unless quitting)
   searchWindow.on('close', (e) => {
-    e.preventDefault();
-    hideSearchWindow();
+    if (!isQuitting) {
+      e.preventDefault();
+      hideSearchWindow();
+    }
   });
 
   return searchWindow;

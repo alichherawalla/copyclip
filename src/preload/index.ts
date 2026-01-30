@@ -10,6 +10,7 @@ const api: IpcApi = {
   hideWindow: () => ipcRenderer.send('hide-window'),
   getItemCount: () => ipcRenderer.invoke('get-item-count'),
   getImageData: (id: string) => ipcRenderer.invoke('get-image-data', id),
+  getFileContent: (id: string) => ipcRenderer.invoke('get-file-content', id),
 };
 
 contextBridge.exposeInMainWorld('api', api);

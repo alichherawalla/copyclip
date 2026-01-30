@@ -8,7 +8,9 @@ let db: Database.Database | null = null;
 
 export function initDatabase(): void {
   const dbPath = path.join(app.getPath('userData'), 'clipboard.db');
+  console.log('[Database] Initializing database at:', dbPath);
   db = new Database(dbPath);
+  console.log('[Database] Database opened successfully');
 
   // Create table if not exists (same schema as Swift version)
   db.exec(`
@@ -51,9 +53,17 @@ export function computeHash(data: Buffer): string {
 export function insertItem(item: Omit<ClipboardItem, 'id'>): ClipboardItem | null {
   const database = getDatabase();
 
+  console.log('[Database] insertItem called:', {
+    contentType: item.contentType,
+    textContent: item.textContent?.substring(0, 50),
+    rawDataSize: item.rawData.length,
+    hash: item.hash.substring(0, 16),
+  });
+
   // Check for duplicate hash
   const existing = database.prepare('SELECT id FROM clipboard_items WHERE hash = ?').get(item.hash);
   if (existing) {
+    console.log('[Database] Duplicate hash found, updating timestamp');
     // Update timestamp of existing item instead
     database.prepare('UPDATE clipboard_items SET timestamp = ? WHERE hash = ?').run(item.timestamp, item.hash);
     return null;
@@ -66,6 +76,7 @@ export function insertItem(item: Omit<ClipboardItem, 'id'>): ClipboardItem | nul
   `);
 
   stmt.run(id, item.timestamp, item.contentType, item.textContent, item.rawData, item.sourceApp, item.hash);
+  console.log('[Database] Item inserted with id:', id);
 
   return { id, ...item };
 }
@@ -188,4 +199,108 @@ export function getImageData(id: string): string | null {
     return null;
   }
   return `data:image/png;base64,${item.rawData.toString('base64')}`;
+}
+
+// Image extensions and their MIME types
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.bmp': 'image/bmp',
+  '.ico': 'image/x-icon',
+  '.svg': 'image/svg+xml',
+};
+
+// Text file extensions (for syntax highlighting hints)
+const TEXT_EXTENSIONS = new Set([
+  '.txt', '.md', '.json', '.js', '.ts', '.jsx', '.tsx', '.css', '.scss',
+  '.html', '.xml', '.yaml', '.yml', '.toml', '.ini', '.conf', '.cfg',
+  '.sh', '.bash', '.zsh', '.py', '.rb', '.go', '.rs', '.java', '.c',
+  '.cpp', '.h', '.hpp', '.swift', '.kt', '.sql', '.graphql', '.env',
+  '.gitignore', '.dockerfile', '.makefile', '.log', '.csv',
+]);
+
+function getFileExtension(fileName: string): string {
+  const lastDot = fileName.lastIndexOf('.');
+  if (lastDot === -1) return '';
+  return fileName.slice(lastDot).toLowerCase();
+}
+
+function isTextContent(buffer: Buffer): boolean {
+  // Check first 8KB for binary content
+  const checkLength = Math.min(buffer.length, 8192);
+  for (let i = 0; i < checkLength; i++) {
+    const byte = buffer[i];
+    // Allow common text bytes: tab, newline, carriage return, and printable ASCII
+    if (byte === 0) return false; // Null byte = binary
+    if (byte < 32 && byte !== 9 && byte !== 10 && byte !== 13) return false;
+  }
+  return true;
+}
+
+export function getFileContent(id: string): { fileName: string; content: string; isImage?: boolean; imageData?: string; fileSize?: number } | null {
+  const item = getItemById(id);
+  if (!item) {
+    return null;
+  }
+  if (item.contentType !== 'file') {
+    return null;
+  }
+
+  const fileName = item.textContent || 'Unknown file';
+  const ext = getFileExtension(fileName);
+  const fileSize = item.rawData.length;
+
+  // Check if it's an image
+  const mimeType = IMAGE_EXTENSIONS[ext];
+  if (mimeType) {
+    const imageData = `data:${mimeType};base64,${item.rawData.toString('base64')}`;
+    return {
+      fileName,
+      content: '',
+      isImage: true,
+      imageData,
+      fileSize,
+    };
+  }
+
+  // Check if it's a text file by extension or content
+  const isKnownTextExt = TEXT_EXTENSIONS.has(ext);
+  const isTextFile = isKnownTextExt || isTextContent(item.rawData);
+
+  if (isTextFile) {
+    try {
+      const content = item.rawData.toString('utf-8');
+      return {
+        fileName,
+        content,
+        fileSize,
+      };
+    } catch {
+      // Fall through to binary
+    }
+  }
+
+  // Binary file
+  return {
+    fileName,
+    content: '[Binary file - cannot preview]',
+    fileSize,
+  };
+}
+
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+export function cleanupExpiredFiles(): number {
+  const database = getDatabase();
+  const cutoffTime = Date.now() - ONE_DAY_MS;
+
+  const result = database.prepare(`
+    DELETE FROM clipboard_items
+    WHERE content_type = 'file' AND timestamp < ?
+  `).run(cutoffTime);
+
+  return result.changes;
 }

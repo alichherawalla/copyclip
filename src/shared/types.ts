@@ -25,6 +25,14 @@ export interface SearchResult {
   matches: Array<[number, number]>;
 }
 
+export interface FileContent {
+  fileName: string;
+  content: string;
+  isImage?: boolean;
+  imageData?: string; // base64 data URL for images
+  fileSize?: number;
+}
+
 export interface IpcApi {
   getItems: (limit?: number) => Promise<ClipboardItemDisplay[]>;
   searchItems: (query: string) => Promise<SearchResult[]>;
@@ -34,6 +42,7 @@ export interface IpcApi {
   hideWindow: () => void;
   getItemCount: () => Promise<number>;
   getImageData: (id: string) => Promise<string | null>;
+  getFileContent: (id: string) => Promise<FileContent | null>;
 }
 
 declare global {
