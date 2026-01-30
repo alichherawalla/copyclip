@@ -7,25 +7,25 @@ A lightweight, privacy-focused clipboard manager for macOS.
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/Screenshot%202026-01-30%20at%2011.06.29%20AM.png" width="600" alt="CopyClip main window">
+  <img src="screenshots/main-window.png" width="600" alt="CopyClip main window">
   <br>
   <em>Clipboard history with preview pane</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/Screenshot%202026-01-30%20at%2011.06.42%20AM.png" width="600" alt="CopyClip fuzzy search">
+  <img src="screenshots/fuzzy-search.png" width="600" alt="CopyClip fuzzy search">
   <br>
   <em>Fuzzy search to quickly find items</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/Screenshot%202026-01-30%20at%2012.33.45%20PM.png" width="600" alt="File preview - text">
+  <img src="screenshots/file-preview-text.png" width="600" alt="File preview - text">
   <br>
-  <em>File preview with syntax highlighting for text files</em>
+  <em>File preview for text files</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/Screenshot%202026-01-30%20at%2012.33.50%20PM.png" width="600" alt="File preview - image">
+  <img src="screenshots/file-preview-image.png" width="600" alt="File preview - image">
   <br>
   <em>Image file preview</em>
 </p>
