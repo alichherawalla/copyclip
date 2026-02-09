@@ -1,63 +1,61 @@
 # CopyClip
 
-A lightweight, privacy-focused clipboard manager for macOS.
+A clipboard manager for macOS that never phones home. Not a single packet leaves your device.
+
+<p align="center">
+  <img src="screenshots/main-window.png" width="600" alt="CopyClip main window">
+  <br>
+  <em>Premium dark UI — clipboard history with live preview</em>
+</p>
+
+---
+
+## Zero Network Activity. Period.
+
+Your clipboard contains passwords, API keys, secrets, personal messages. CopyClip is built so that **none of it ever leaves your machine** — not a single packet, not a single DNS lookup, not a single HTTP request.
+
+- **Zero outbound network connections** — no telemetry, no analytics, no crash reporting
+- **Zero auto-update mechanisms** — no phone-home behavior of any kind
+- **Zero cloud sync** — your data lives on your disk and nowhere else
+- **Zero account required** — no sign-ups, no logins, no authentication servers
+- **All data stored locally** in `~/Library/Application Support/copyclip/clipboard.db`
+
+This isn't a privacy policy — it's an architectural guarantee. There is no networking code in the application.
 
 ---
 
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/main-window.png" width="600" alt="CopyClip main window">
+  <img src="screenshots/file-preview-image.png" width="600" alt="Image file preview">
   <br>
-  <em>Clipboard history with preview pane</em>
+  <em>Smart file previews with inline image rendering</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/fuzzy-search.png" width="600" alt="CopyClip fuzzy search">
+  <img src="screenshots/file-preview-text.png" width="600" alt="Text file preview">
   <br>
-  <em>Fuzzy search to quickly find items</em>
+  <em>File content preview with metadata</em>
 </p>
 
 <p align="center">
-  <img src="screenshots/file-preview-text.png" width="600" alt="File preview - text">
+  <img src="screenshots/fuzzy-search.png" width="600" alt="Fuzzy search">
   <br>
-  <em>File preview for text files</em>
-</p>
-
-<p align="center">
-  <img src="screenshots/file-preview-image.png" width="600" alt="File preview - image">
-  <br>
-  <em>Image file preview</em>
+  <em>Instant fuzzy search across your entire clipboard history</em>
 </p>
 
 ---
 
 ## Features
 
-- **Clipboard History** - Automatically saves everything you copy (text, images, RTF, and files)
-- **File Copying Support** - Copy files in Finder and paste them anywhere - CopyClip remembers file contents
-- **Smart Previews** - Preview text files with syntax highlighting, images inline, and file metadata
-- **Fuzzy Search** - Quickly find items by typing part of the text
-- **Global Hotkey** - Access your clipboard history instantly with `Cmd + Shift + C`
-- **Menu Bar App** - Lives in your menu bar, always accessible but never in the way
-- **Deduplication** - Identical items are merged, keeping your history clean
-- **Auto-Cleanup** - Copied files are automatically cleaned up after 24 hours to save space
-
----
-
-## Privacy First
-
-**Your clipboard data never leaves your computer.**
-
-| Feature | Description |
-|---------|-------------|
-| **100% Offline** | Works entirely offline. No internet connection required. |
-| **No Analytics** | Zero tracking, telemetry, or usage data collection. |
-| **No Cloud Sync** | Your clipboard history is stored locally on your machine only. |
-| **No Account Required** | Just install and use. No sign-ups, no logins. |
-| **Local Storage** | All data stored in `~/Library/Application Support/copyclip/clipboard.db` |
-
-Your clipboard often contains sensitive information - passwords, API keys, personal messages. CopyClip ensures this data stays private by design.
+- **Clipboard History** — Automatically saves everything you copy (text, images, RTF, and files)
+- **File Copying Support** — Copy files in Finder and paste them anywhere
+- **Smart Previews** — Preview text files, images inline, and file metadata
+- **Fuzzy Search** — Instantly find any item across your entire history
+- **Global Hotkey** — Access clipboard history with `Cmd + Shift + C` from anywhere
+- **Menu Bar App** — Lives in your menu bar, always accessible but never in the way
+- **Deduplication** — Identical items are merged, keeping your history clean
+- **Auto-Cleanup** — Copied files are automatically cleaned up after 24 hours
 
 ---
 
@@ -329,12 +327,6 @@ MIT License - feel free to use, modify, and distribute.
 
 ---
 
-## Acknowledgments
-
-Built with privacy in mind. Your data belongs to you.
-
----
-
 <p align="center">
-  <strong>CopyClip</strong> - A clipboard manager that respects your privacy.
+  <strong>CopyClip</strong> — Your clipboard, your device, your data. Nothing leaves.
 </p>
