@@ -151,8 +151,8 @@ export function fuzzySearch(items: ClipboardItemDisplay[], query: string): Searc
     }
   }
 
-  // Sort by score (highest first)
-  results.sort((a, b) => b.score - a.score);
+  // Sort by recency (most recent first)
+  results.sort((a, b) => b.item.timestamp - a.item.timestamp);
 
   // Return top 100 results
   return results.slice(0, 100);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ClipboardItemDisplay } from '../../shared/types';
 
 interface ItemRowProps {
@@ -8,55 +8,6 @@ interface ItemRowProps {
   onClick: () => void;
   onDoubleClick: () => void;
   onMouseEnter: () => void;
-}
-
-const styles = {
-  container: (isSelected: boolean): React.CSSProperties => ({
-    padding: '10px 14px',
-    cursor: 'pointer',
-    backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.3)' : 'transparent',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-    transition: 'background-color 0.1s',
-  }),
-  preview: {
-    fontSize: '13px',
-    color: '#fff',
-    whiteSpace: 'nowrap' as const,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    marginBottom: '4px',
-  },
-  meta: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontSize: '11px',
-    color: 'rgba(255, 255, 255, 0.5)',
-  },
-  type: (type: string): React.CSSProperties => ({
-    padding: '2px 6px',
-    borderRadius: '4px',
-    backgroundColor: getTypeColor(type),
-    fontSize: '10px',
-    textTransform: 'uppercase' as const,
-  }),
-  highlight: {
-    backgroundColor: 'rgba(251, 191, 36, 0.4)',
-    borderRadius: '2px',
-  },
-};
-
-function getTypeColor(type: string): string {
-  switch (type) {
-    case 'image':
-      return 'rgba(139, 92, 246, 0.3)';
-    case 'rtf':
-      return 'rgba(236, 72, 153, 0.3)';
-    case 'file':
-      return 'rgba(34, 197, 94, 0.3)';
-    default:
-      return 'rgba(59, 130, 246, 0.3)';
-  }
 }
 
 function formatTime(timestamp: number): string {
@@ -98,7 +49,10 @@ function highlightText(
       result.push(text.slice(lastIndex, start));
     }
     result.push(
-      <span key={start} style={styles.highlight}>
+      <span key={start} style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+        borderRadius: '2px',
+      }}>
         {text.slice(start, end)}
       </span>
     );
@@ -120,21 +74,65 @@ export default function ItemRow({
   onDoubleClick,
   onMouseEnter,
 }: ItemRowProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const previewText = item.preview.slice(0, 100);
 
   return (
     <div
-      style={styles.container(isSelected)}
+      style={{
+        padding: '10px 14px',
+        cursor: 'pointer',
+        backgroundColor: isSelected
+          ? 'rgba(38, 38, 38, 0.4)'
+          : isHovered
+            ? 'rgba(38, 38, 38, 0.2)'
+            : 'transparent',
+        borderBottom: '1px solid rgba(38, 38, 38, 0.5)',
+        borderLeft: isSelected ? '2px solid #404040' : '2px solid transparent',
+        transition: 'background-color 0.15s, border-color 0.15s',
+      }}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={() => { onMouseEnter(); setIsHovered(true); }}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div style={styles.preview}>
+      <div style={{
+        fontSize: '13px',
+        color: isSelected ? '#ffffff' : '#e5e5e5',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        marginBottom: '6px',
+        fontWeight: 400,
+        lineHeight: '1.4',
+      }}>
         {highlightText(previewText, matches)}
       </div>
-      <div style={styles.meta}>
-        <span style={styles.type(item.contentType)}>{item.contentType}</span>
-        <span>{formatTime(item.timestamp)}</span>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}>
+        <span style={{
+          padding: '2px 7px',
+          borderRadius: '4px',
+          backgroundColor: '#262626',
+          border: '1px solid #404040',
+          fontSize: '9px',
+          fontWeight: 600,
+          textTransform: 'uppercase' as const,
+          letterSpacing: '0.08em',
+          color: '#a3a3a3',
+        }}>
+          {item.contentType}
+        </span>
+        <span style={{
+          fontSize: '10px',
+          color: '#737373',
+          letterSpacing: '0.01em',
+        }}>
+          {formatTime(item.timestamp)}
+        </span>
       </div>
     </div>
   );

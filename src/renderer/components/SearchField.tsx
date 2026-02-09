@@ -1,41 +1,66 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 interface SearchFieldProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: '12px',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-  },
-  input: {
-    width: '100%',
-    padding: '10px 14px',
-    fontSize: '14px',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-    borderRadius: '8px',
-    color: '#fff',
-    outline: 'none',
-    transition: 'border-color 0.2s, background-color 0.2s',
-  },
-};
-
 const SearchField = forwardRef<HTMLInputElement, SearchFieldProps>(
   ({ value, onChange }, ref) => {
+    const [isFocused, setIsFocused] = useState(false);
+
     return (
-      <div style={styles.container}>
-        <input
-          ref={ref}
-          type="text"
-          placeholder="Search clipboard history..."
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          style={styles.input}
-          autoFocus
-        />
+      <div style={{
+        padding: '12px 14px',
+        borderBottom: '1px solid #262626',
+      }}>
+        <div style={{
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+        }}>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#737373"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              position: 'absolute',
+              left: '12px',
+              pointerEvents: 'none',
+            }}
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            ref={ref}
+            type="text"
+            placeholder="Search..."
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            style={{
+              width: '100%',
+              padding: '10px 14px 10px 38px',
+              fontSize: '14px',
+              fontWeight: 400,
+              backgroundColor: 'rgba(23, 23, 23, 0.8)',
+              border: `1px solid ${isFocused ? '#525252' : '#262626'}`,
+              borderRadius: '10px',
+              color: '#ffffff',
+              outline: 'none',
+              transition: 'border-color 0.2s',
+              letterSpacing: '0.01em',
+            }}
+            autoFocus
+          />
+        </div>
       </div>
     );
   }

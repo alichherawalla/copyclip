@@ -3,7 +3,10 @@ node_modules/
 
 # Build outputs
 dist/
-release/
+release/*.blockmap
+release/*.yml
+release/*.yaml
+release/mac-arm64/
 
 # IDE and editor files
 .idea/
