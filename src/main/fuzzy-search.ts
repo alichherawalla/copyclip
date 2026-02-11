@@ -135,6 +135,37 @@ function indicesToRanges(indices: number[]): Array<[number, number]> {
   return ranges;
 }
 
+function wordMatchBonus(query: string, text: string): number {
+  const queryWords = query.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+  if (queryWords.length === 0) return 0;
+
+  const textLower = text.toLowerCase();
+  let bonus = 0;
+
+  for (const word of queryWords) {
+    // Exact word match (bounded by word boundaries or string edges)
+    const wordRegex = new RegExp(`(?:^|[\\s\\-_.,;:!?()\\[\\]{}'"\\/\\\\])${escapeRegex(word)}(?:$|[\\s\\-_.,;:!?()\\[\\]{}'"\\/\\\\])`, 'i');
+    if (wordRegex.test(text)) {
+      bonus += 50;
+    } else if (textLower.includes(word)) {
+      // Substring match (e.g. "kubectl" inside "run_kubectl_apply")
+      bonus += 30;
+    }
+  }
+
+  // Extra bonus when all query words are found as words
+  const allWordsFound = queryWords.every(word => textLower.includes(word));
+  if (allWordsFound) {
+    bonus += 20;
+  }
+
+  return bonus;
+}
+
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function fuzzySearch(items: ClipboardItemDisplay[], query: string): SearchResult[] {
   const results: SearchResult[] = [];
 
@@ -143,16 +174,17 @@ export function fuzzySearch(items: ClipboardItemDisplay[], query: string): Searc
     const matchResult = fuzzyMatch(query, text);
 
     if (matchResult) {
+      const bonus = wordMatchBonus(query, text);
       results.push({
         item,
-        score: matchResult.score,
+        score: matchResult.score + bonus,
         matches: matchResult.matches,
       });
     }
   }
 
-  // Sort by recency (most recent first)
-  results.sort((a, b) => b.item.timestamp - a.item.timestamp);
+  // Sort by match score (best first), then recency as tiebreaker
+  results.sort((a, b) => b.score - a.score || b.item.timestamp - a.item.timestamp);
 
   // Return top 100 results
   return results.slice(0, 100);
